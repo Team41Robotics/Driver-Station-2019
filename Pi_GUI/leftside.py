@@ -1,15 +1,11 @@
-from Tkinter import *
+from tkinter import *
 import math
 import serial
 
 # Define Serial
 ser = serial.Serial(
     port='/dev/ttyAMA0', # Replace ttyS0 with ttyAM0 for Pi1,Pi2,Pi0
-    baudrate = 9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE,
-    bytesize=serial.EIGHTBITS,
-    timeout=1
+    baudrate = 9600
 )
 
 # Create window
@@ -103,7 +99,7 @@ ctx.create_rectangle(width - exit_button_width, height - exit_button_height, wid
 
 def handle_click(event):
     global current_circle
-    print ("clicked at", event.x, event.y)
+    #print ("clicked at", event.x, event.y)
 
     if event.x >= width - exit_button_width and event.y >= height - exit_button_height:
     #if event.x >= 0 and event.y >= 0:
@@ -157,7 +153,7 @@ delay = 50
 
 def publish():
     #print(get_height(current_circle))
-    ser.write(bytes(get_height(current_circle)))
+    ser.write(get_height(current_circle).to_bytes(1,'big'))
     root.after(delay, publish)
 
 ctx.bind("<Button-1>", handle_click)
