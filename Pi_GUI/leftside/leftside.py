@@ -1,6 +1,7 @@
 from tkinter import *
 import math
 import serial
+#import serial_dummy as serial
 
 # Define Serial
 ser = serial.Serial(
