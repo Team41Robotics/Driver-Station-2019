@@ -26,9 +26,12 @@ uint8_t buttons2;
 bytestoint sliders[4];
 bytestoint knobs[2];
 
-int POV = 8;
+int POV1 = 8;
+int POV2 = 8;
+
 void setup() {
-  Serial3.begin(9600);
+  Serial1.begin(9600); // Right side Raspberry Pi Zero
+  Serial3.begin(9600); // Left side Raspberry Pi Zero
   Joystick.clearState();
   for (int i = 0; i < NUM_BUTTONS; i++){
     pinMode(greenPin+i, OUTPUT);      // sets the digital pin 13 as output
@@ -37,7 +40,7 @@ void setup() {
     pinMode(inPin+i, INPUT_PULLUP);        // sets the digital pin 7 as input
   }
   
-  Serial2.begin(9600);
+  Serial2.begin(9600); // Arduino Leonardo
 }
 
 void loop() {
@@ -91,7 +94,11 @@ void loop() {
   }
 
   if (Serial3.available()){
-    POV = (int) Serial3.read();
+    POV1 = (int) Serial3.read();
+  }
+
+  if (Serial1.available()){
+    POV2 = (int) Serial1.read();
   }
 
   if(q>0) {
@@ -128,8 +135,8 @@ void loop() {
   Joystick.state.buttons.data3 = data[8]; // this byte contains one set of switch data
   Joystick.state.buttons.data4 = data[9]; // last byte contains last set of switch data
   
-  Joystick.state.hats.switch1 = POV;
-  //Joystick.state.hats.switch2 = HAT_UP;
+  Joystick.state.hats.switch1 = POV1;
+  Joystick.state.hats.switch2 = POV2;
   //call send state to pack and send the current state over usb
   Joystick.sendState();
 //  delay(50);
