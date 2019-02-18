@@ -19,6 +19,7 @@ root.overrideredirect(True)
 root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
 root.focus_set()  #Move focus to this widget
 root.bind("<Escape>", lambda e: root.quit())
+root.config(cursor="None")
 #root.geometry("{}x{}".format(width, height))
 
 #Create canvas
@@ -153,6 +154,10 @@ def fill_rect(button_num):
 fill_rect(3)
 
 ctx.bind("<Button-1>", handle_click)
+
+# Debug tools
+root.bind("<F1>", lambda evt: root.destroy())
+root.bind("<F2>", lambda evt: root.config(cursor=""))
 
 def publish():
 	ser.write((3-current_btn).to_bytes(1,'big'))
