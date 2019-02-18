@@ -19,7 +19,7 @@ root.overrideredirect(True)
 root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
 root.focus_set()  #Move focus to this widget
 root.bind("<Escape>", lambda e: root.quit())
-root.config(cursor="None")
+#root.config(cursor="none")
 #root.geometry("{}x{}".format(width, height))
 
 # Create canvas

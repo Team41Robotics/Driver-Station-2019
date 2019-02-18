@@ -19,7 +19,7 @@ root.overrideredirect(True)
 root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
 root.focus_set()  #Move focus to this widget
 root.bind("<Escape>", lambda e: root.quit())
-root.config(cursor="None")
+root.config(cursor="none")
 #root.geometry("{}x{}".format(width, height))
 
 #Create canvas
@@ -110,38 +110,23 @@ def handle_click(event):
 	fill_rect(button_num)
 	#ctx.create_image(extBtnWidth/2, height - extBtnHeight/2, image=exitButton)
 	current_btn = button_num
-	
-claw_temp = None
-current_angle = 0
-goal = 0
 
 def render_claw(button_num):
-	global goal
 	if button_num == -1 or button_num == 3:
 		return
-	#claw = ctx.create_image(claw_x, claw_y, image=claws[button_num][0], tag="claw", anchor=CENTER)
-	goal = claw_angles[button_num]
+	rotate_claw(claw_angles[button_num])
 
-def rotate_claw():
-	global claw, claw_temp, claw_orig, current_angle, goal
-	if not goal == current_angle:
-		if (abs(goal - current_angle) <= 0.5):
-			current_angle = goal
-		err = goal - current_angle
-		kP = 0.5
-		max_speed = 20
-		d_theta = err * kP
-		if d_theta > max_speed: d_theta = max_speed
-		elif d_theta < -max_speed: d_theta = -max_speed
-		current_angle += d_theta
-		claw_temp = claw_orig.copy()
-		claw_temp = claw_temp.rotate(current_angle)
-		claw_temp = ImageTk.PhotoImage(claw_temp)
-		ctx.delete("claw")
-		claw = ctx.create_image(claw_x, claw_y, image=claw_temp, tag="claw", anchor=CENTER)
-	root.after(int(1000/30), rotate_claw)
+claw_temp = None
 
-rotate_claw()
+def rotate_claw(goal):
+	global claw, claw_temp
+	claw_temp = claw_orig.copy()
+	claw_temp = claw_temp.rotate(goal)
+	claw_temp = ImageTk.PhotoImage(claw_temp)
+	ctx.delete("claw")
+	claw = ctx.create_image(claw_x, claw_y, image=claw_temp, tag="claw", anchor=CENTER)
+
+render_claw(0)
 
 def fill_rect(button_num):
 	if button_num == -1:
