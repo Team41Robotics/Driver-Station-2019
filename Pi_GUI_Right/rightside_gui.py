@@ -47,7 +47,7 @@ def rotate(photo, deg):
 bg_bot = PILImage.open("background-bot.png")
 bg_bot.convert("RGBA")
 bg_bot = ImageTk.PhotoImage(bg_bot)
-ctx.create_image(-230, 125, image=bg_bot, anchor=W)
+ctx.create_image(-209, 130, image=bg_bot, anchor=W)
 
 claw_orig = PILImage.open("bot-arm.png")
 claw_orig.convert("RGBA")
@@ -65,8 +65,8 @@ extBtnHeight = 50
 btnWidth = 250
 btnHeight = int(height / 4)
 
-claw_x = (width - btnWidth)/4 + 100 #(width - btnWidth)/2
-claw_y = height/2 + 20
+claw_x = (width - btnWidth)/4 + 110 #(width - btnWidth)/2
+claw_y = height/2 + 30
 
 current_btn = -1
 
@@ -146,7 +146,7 @@ root.bind("<F2>", lambda evt: root.config(cursor=""))
 
 def publish():
 	data = current_btn
-        if data == -1: data = 3
+	if data == -1: data = 3
 	ser.write(data.to_bytes(1,'big'))
 	root.after(50, publish)
 
