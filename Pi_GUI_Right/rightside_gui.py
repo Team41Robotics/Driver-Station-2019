@@ -145,7 +145,9 @@ root.bind("<F1>", lambda evt: root.destroy())
 root.bind("<F2>", lambda evt: root.config(cursor=""))
 
 def publish():
-	ser.write((3-current_btn).to_bytes(1,'big'))
+	data = current_btn
+        if data == -1: data = 3
+	ser.write(data.to_bytes(1,'big'))
 	root.after(50, publish)
 
 root.after(50, publish)
