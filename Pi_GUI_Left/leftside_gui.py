@@ -19,7 +19,7 @@ root.overrideredirect(True)
 root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
 root.focus_set()  #Move focus to this widget
 root.bind("<Escape>", lambda e: root.quit())
-#root.config(cursor="none")
+root.config(cursor="none")
 #root.geometry("{}x{}".format(width, height))
 
 # Create canvas
@@ -27,135 +27,92 @@ ctx = Canvas(root, width=width,
              height=height, background="black")
 ctx.pack()
 
-def resize(photo, w, h):
-    scale = (min(w / photo.width(), h / photo.height()))
-    if scale > 1:
-        scale = math.floor(scale)
-        #print("Zoom in " + str(scale) + "x")
-        photo = photo.zoom(scale)
-    elif scale < 1:
-        scale = math.ceil(1 / scale)
-        #print("Zoom out " + str(scale) + "x")
-        photo = photo.subsample(scale)
-    return photo
-ctx.pack()
+bg = PhotoImage(file="left_bg.gif")
+ctx.create_image(0, 0, image=bg, tag="bg", anchor=NW)
 
-rect_width = 250
-rect_height = 440
-side_rect_width = 180
-theta = 8 # Degrees
-# Center side
-ctx.create_rectangle(width/2 - rect_width/2, height/2 - rect_height/2, width/2 + rect_width/2, height/2 + rect_height/2, fill='white', outline='black')
-# Left side
-ctx.create_polygon(
-    width/2 - rect_width/2 - side_rect_width,   height/2 - rect_height/2 - side_rect_width*math.tan(math.radians(theta)), # Top left
-    width/2 - rect_width/2,     height/2 - rect_height/2, # Top right
-    width/2 - rect_width/2,     height/2 + rect_height/2, # Bottom right
-    width/2 - rect_width/2 - side_rect_width,   height/2 + rect_height/2 - side_rect_width*math.tan(math.radians(theta)), # Bottom left
-    fill='#eee',outline='black'
-)
-# Right side
-ctx.create_polygon(
-    width/2 + rect_width/2,     height/2 - rect_height/2, # Top right
-    width/2 + rect_width/2 + side_rect_width,   height/2 - rect_height/2 - side_rect_width*math.tan(math.radians(theta)), # Top left
-    width/2 + rect_width/2 + side_rect_width,   height/2 + rect_height/2 - side_rect_width*math.tan(math.radians(theta)), # Bottom left
-    width/2 + rect_width/2,     height/2 + rect_height/2, # Bottom right
-    fill='#eee',outline='black'
-)
 # "It's circle time!" - James Narayanan
-radius = 55
-h1 = height/2 + rect_height/2 - radius - rect_height/8
-margin = 20
-# heights = [h1, h1 - 2*radius - margin, h1 - 4*radius - 2*margin]
-heights = [h1 - 4*radius - 2*margin, h1 - 2*radius - margin, h1]
-side_height_offset = 10
-side_circle_width = radius - 10
+circle_coords = [(358,374), (140,350), (358,251), (140,227), (358,128),(140,104)]
+radius = 50
+padding = 5
+current_btn = -1
 
-circles = [[0,0,0],[0,0,0], [0,0,0]]
-current_circle = [-1,-1]
-
-for spot, h in enumerate(heights):
-    # Center side
-    circles[1][spot] = ctx.create_oval(
-        width/2 - radius,   h - radius,
-        width/2 + radius,   h + radius,
-        fill='red',outline='black'
-    )
-    # Left side
-    circles[0][spot] = ctx.create_oval(
-        width/2 - rect_width/2 - side_rect_width/2 - side_circle_width,    h - radius + side_height_offset,
-        width/2 - rect_width/2 - side_rect_width/2 + side_circle_width,    h + radius + side_height_offset,
-        fill='red',outline='black'
-    )
-    # Right side
-    circles[2][spot] = ctx.create_oval(
-        width/2 + rect_width/2 + side_rect_width/2 - side_circle_width,    h - radius + side_height_offset,
-        width/2 + rect_width/2 + side_rect_width/2 + side_circle_width,    h + radius + side_height_offset,
-        fill='red',outline='black'
-    )
-
-
+# Exit button
 exit_button_width = 50
 exit_button_height = 50
 ctx.create_rectangle(width - exit_button_width, height - exit_button_height, width, height, fill='red')
 
-def handle_click(event):
-    global current_circle
-    #print ("clicked at", event.x, event.y)
+# Create hab buttons
+btn_height = height/2 - exit_button_height/2 - 5
+btn_width = 300
 
+def draw_habs(hab12='#111', hab23='#111'):
+    # Rectangles
+    ctx.delete('hab12')
+    ctx.create_rectangle(width-btn_width, 0, width, btn_height, fill=hab12, outline='white',tag='hab12')
+    ctx.delete('hab23')
+    ctx.create_rectangle(width-btn_width, btn_height, width, btn_height*2, fill=hab23, outline='white',tag='hab23')
+    # Text boxes
+    ctx.delete('hab12txt')
+    ctx.create_text(width-btn_width/2, btn_height/2, text="HAB 1 → 2", fill="white", font="helvetica 40", tag='hab12txt')
+    ctx.delete('hab23txt')
+    ctx.create_text(width-btn_width/2, btn_height*3/2, text="HAB 2 → 3", fill="white", font="helvetica 40", tag='hab23txt')
+
+draw_habs()
+
+
+def handle_click(event):
+    global current_btn
     if event.x >= width - exit_button_width and event.y >= height - exit_button_height:
-    #if event.x >= 0 and event.y >= 0:
         print("Exiting...")
         root.destroy()
         return
     
-    picked_circle = [-1, -1] # x, y
-    if event.x < width/2 - rect_width/2: # Left side
-        picked_circle[0] = 0
-    elif event.x > width/2 + rect_width/2: # Right side
-        picked_circle[0] = 2
-    else: # Center
-        picked_circle[0] = 1
-        for spot, h in enumerate(heights): # Reverses height array to go top to bottom
-            if event.y < h + radius + margin/2 and event.y > h - radius - margin/2:
-                picked_circle[1] = spot
-                break
-
-    if picked_circle[0] % 2 == 0: # If it's on the side
-         for spot, h in enumerate(heights): # Reverses height array to go top to bottom
-            if event.y < h + radius + side_height_offset + margin/2 and event.y > h - radius + side_height_offset - margin/2:
-                picked_circle[1] = spot
-                break
-
-    if picked_circle[0] == -1 or picked_circle[1] == -1:
-        return
-
-    for col in circles:
-        for c in col:
-            ctx.itemconfig(c, fill= "red")
+    # Figure out what the user picked
+    picked_btn = -1
+    for i in range(len(circle_coords)):
+        coord = circle_coords[i]
+        if (event.x >= coord[0] - radius - padding and event.x <= coord[0] + radius + padding and
+            event.y >= coord[1] - radius - padding and event.y <= coord[1] + radius + padding): # Bounding box
+            picked_btn = i
     
-    if current_circle != picked_circle:
-        ctx.itemconfig(circles[picked_circle[0]][picked_circle[1]], fill= "green")
-        current_circle = picked_circle
+    # Check hab buttons
+    if event.x >= width - btn_width and event.y <= btn_height*2:
+        picked_btn = -1
+        if event.y <= btn_height: # Hab 1 to 2
+            picked_btn = 6
+        else: # Hab 2 to 3
+            picked_btn = 7
+    
+    if current_btn == picked_btn:
+        current_btn = -1
     else:
-        current_circle = [-1,-1]
+        current_btn = picked_btn
 
-    print ("clicked ",picked_circle)
-    print("--------------")
-
-def get_height(circle):
-    if circle[0] == -1:
-        return 0
-    if circle[0] % 2 == 0:
-        return 6 - (circle[1]*2 + 1)
-    else:
-        return 6 - (circle[1]*2)
+    # Draw ball or hatch
+    ctx.delete('cargo')
+    ctx.delete('hatch')
+    if current_btn >= 0 and current_btn <= 5:
+        draw_habs()
+        coord = circle_coords[current_btn]
+        r = 37
+        x0 = coord[0] - r
+        x1 = coord[0] + r
+        y0 = coord[1] - r
+        y1 = coord[1] + r
+        if current_btn % 2 == 0: # Hatch panel
+            ctx.create_oval(x0, y0, x1, y1, outline='yellow', width=10, tag='hatch')
+            ctx.create_oval(x0-3, y0-3, x1+3, y1+3, outline='#DDD', width=2, tag='cargo')
+        else: # Cargo
+            ctx.create_oval(x0, y0, x1, y1, outline='#ff4a00', fill='#ff4a00', width=5, tag='cargo')
+    elif current_btn == 6: draw_habs(hab12='blue')
+    elif current_btn == 7: draw_habs(hab23='blue')
+    else: draw_habs()
 
 delay = 50
 
 def publish():
-    #print(get_height(current_circle))
-    ser.write(get_height(current_circle).to_bytes(1,'big'))
+    #print(get_height(current_btn))
+    ser.write((current_btn+1).to_bytes(1,'big'))
     root.after(delay, publish)
 
 ctx.bind("<Button-1>", handle_click)
