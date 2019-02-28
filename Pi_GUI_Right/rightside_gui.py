@@ -85,7 +85,7 @@ buttons = [upRect, ballRect, levelRect, customRect]
 ctx.create_text((800 - btnWidth) + (btnWidth / 2), btnHeight / 2, text = "START", fill = "white", font = "helvetica 40")
 ctx.create_text((800 - btnWidth) + (btnWidth / 2), (btnHeight + btnHeight / 2), text = "BALL", fill = "white", font = "helvetica 40")
 ctx.create_text((800 - btnWidth) + (btnWidth / 2), (btnHeight * 2 + btnHeight / 2), text = "LEVEL", fill = "white", font = "helvetica 40")
-ctx.create_text((800 - btnWidth) + (btnWidth / 2), (btnHeight * 3 + btnHeight / 2), text = "CUSTOM", fill = "white", font = "helvetica 40")
+ctx.create_text((800 - btnWidth) + (btnWidth / 2), (btnHeight * 3 + btnHeight / 2), text = "OVERRIDE", fill = "white", font = "helvetica 35")
 
 #Highlight when clicked
 def handle_click(event):
