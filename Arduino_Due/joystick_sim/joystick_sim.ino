@@ -26,8 +26,8 @@ uint8_t buttons2;
 bytestoint sliders[4];
 bytestoint knobs[2];
 
-int POV1 = 8;
-int POV2 = 8;
+int POV1 = 0;
+int POV2 = 0;
 
 void setup() {
   Serial1.begin(9600); // Right side Raspberry Pi Zero
