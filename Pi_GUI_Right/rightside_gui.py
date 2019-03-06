@@ -1,9 +1,13 @@
+test = False
+
 from tkinter import *
 from PIL import Image as PILImage
 from PIL import ImageTk
 import math
-import serial
-#import serial_dummy as serial
+if not test:
+	import serial
+else:
+	import serial_dummy as serial
 
 # Define serial
 ser = serial.Serial(port='/dev/ttyAMA0', baudrate=9600)
@@ -15,12 +19,13 @@ width = 800
 height = 480
 
 # Full screen
-root.overrideredirect(True)
-root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
-root.focus_set()  #Move focus to this widget
-root.bind("<Escape>", lambda e: root.quit())
-root.config(cursor="none")
-#root.geometry("{}x{}".format(width, height))
+if not test:
+	root.overrideredirect(True)
+	root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
+	root.focus_set()  #Move focus to this widget
+	root.bind("<Escape>", lambda e: root.quit())
+	root.config(cursor="none")
+	#root.geometry("{}x{}".format(width, height))
 
 #Create canvas
 ctx = Canvas(root, width=width, height = height, background="#222")

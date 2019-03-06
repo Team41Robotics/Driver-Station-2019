@@ -1,7 +1,11 @@
+test = False
+
 from tkinter import *
 import math
-import serial
-#import serial_dummy as serial
+if not test:
+    import serial
+else:
+    import serial_dummy as serial
 
 # Define Serial
 ser = serial.Serial(
@@ -15,12 +19,13 @@ root.title("GUI")
 width = 800
 height = 480
 # Full screen
-root.overrideredirect(True)
-root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
-root.focus_set()  #Move focus to this widget
-root.bind("<Escape>", lambda e: root.quit())
-root.config(cursor="none")
-#root.geometry("{}x{}".format(width, height))
+if not test:
+    root.overrideredirect(True)
+    root.geometry("{0}x{1}+0+0".format(root.winfo_screenwidth(), root.winfo_screenheight()))
+    root.focus_set()  #Move focus to this widget
+    root.bind("<Escape>", lambda e: root.quit())
+    root.config(cursor="none")
+    #root.geometry("{}x{}".format(width, height))
 
 # Create canvas
 ctx = Canvas(root, width=width,
