@@ -29,6 +29,8 @@ bytestoint knobs[2];
 int POV1 = 0;
 int POV2 = 0;
 
+int piVal = 0;
+
 void setup() {
   Serial1.begin(9600); // Right side Raspberry Pi Zero
   Serial3.begin(9600); // Left side Raspberry Pi Zero
@@ -93,13 +95,16 @@ void loop() {
     }
   }
 
-  if (Serial3.available()){
-    POV1 = (int) Serial3.read();
-  }
-
-  if (Serial1.available()){
-    POV2 = (int) Serial1.read();
-  }
+  // Left Raspberry Pi 
+  if (Serial3.available()) piVal = (int) Serial3.read();
+  // Right Raspberry Pi
+  if (Serial1.available()) piVal = (int) Serial1.read();
+  // Send latest value to both
+  Serial1.print(byte(piVal));
+  Serial3.print(byte(piVal));
+  // Can send up to 88 values in base 9
+  POV0 = piVal % 8; // First digit
+  POV1 = (int) (piVal / 8); // Second digit
 
   if(q>0) {
     for (int i =0; i < 4; i++){
