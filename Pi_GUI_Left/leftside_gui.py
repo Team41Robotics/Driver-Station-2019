@@ -1,4 +1,4 @@
-test = False
+test = True
 
 from tkinter import *
 import math
@@ -36,7 +36,7 @@ bg = PhotoImage(file="left_bg.gif")
 ctx.create_image(0, 0, image=bg, tag="bg", anchor=NW)
 
 # "It's circle time!" - James Narayanan
-circle_coords = [(358,374), (140,350), (358,251), (140,227), (358,128),(140,104)]
+circle_coords = [(369,396), (129,395), (129, 272), (129, 150)]
 radius = 50
 padding = 5
 current_btn = -1
@@ -47,7 +47,7 @@ exit_button_height = 50
 ctx.create_rectangle(width - exit_button_width, height - exit_button_height, width, height, fill='red')
 
 # Create hab buttons
-btn_height = height/4 - exit_button_height/2 - 5
+btn_height = height/2 - exit_button_height/2 - 5
 btn_width = 300
 
 def draw_habs(hab12='#111', hab23='#111', cargo_ship='#111', load_hatch='#111'):
@@ -56,19 +56,11 @@ def draw_habs(hab12='#111', hab23='#111', cargo_ship='#111', load_hatch='#111'):
     ctx.create_rectangle(width-btn_width, 0, width, btn_height, fill=hab12, outline='white',tag='hab12')
     ctx.delete('hab23')
     ctx.create_rectangle(width-btn_width, btn_height, width, btn_height*2, fill=hab23, outline='white',tag='hab23')
-    ctx.delete('cargo_ship')
-    ctx.create_rectangle(width-btn_width, btn_height*2, width, btn_height*3, fill=cargo_ship, outline='white',tag='cargo_ship')
-    ctx.delete('load_hatch')
-    ctx.create_rectangle(width-btn_width, btn_height*3, width, btn_height*4, fill=load_hatch, outline='white',tag='load_hatch')
     # Text boxes
     ctx.delete('hab12txt')
     ctx.create_text(width-btn_width/2, btn_height/2, text="HAB 1 → 2", fill="white", font="helvetica 40", tag='hab12txt')
     ctx.delete('hab23txt')
     ctx.create_text(width-btn_width/2, btn_height*3/2, text="HAB 2 → 3", fill="white", font="helvetica 40", tag='hab23txt')
-    ctx.delete('cargo_shiptxt')
-    ctx.create_text(width-btn_width/2, btn_height*5/2, text="Cargo Ship", fill="white", font="helvetica 40", tag='cargo_shiptxt')
-    ctx.delete('load_hatchtxt')
-    ctx.create_text(width-btn_width/2, btn_height*7/2, text="Load Hatch", fill="white", font="helvetica 40", tag='load_hatchtxt')
 
 draw_habs()
 
@@ -89,16 +81,12 @@ def handle_click(event):
             picked_btn = i
     
     # Check hab buttons
-    if event.x >= width - btn_width and event.y <= btn_height*4:
+    if event.x >= width - btn_width and event.y <= btn_height*2:
         picked_btn = -1
         if event.y <= btn_height: # Hab 1 to 2
-            picked_btn = 6
+            picked_btn = 4
         elif event.y <= btn_height * 2: # Hab 2 to 3
-            picked_btn = 7
-        elif event.y <= btn_height * 3: # Cargo Ship
-            picked_btn = 8
-        else: # Load Hatch
-            picked_btn = 9
+            picked_btn = 5
     
     if current_btn == picked_btn:
         current_btn = -1
@@ -106,9 +94,9 @@ def handle_click(event):
         current_btn = picked_btn
 
     # Draw ball or hatch
-    ctx.delete('cargo')
-    ctx.delete('hatch')
-    if current_btn >= 0 and current_btn <= 5:
+    ctx.delete('hatch0')
+    ctx.delete('hatch1')
+    if current_btn >= 0 and current_btn <= 3:
         draw_habs()
         coord = circle_coords[current_btn]
         r = 37
@@ -116,15 +104,10 @@ def handle_click(event):
         x1 = coord[0] + r
         y0 = coord[1] - r
         y1 = coord[1] + r
-        if current_btn % 2 == 0: # Hatch panel
-            ctx.create_oval(x0, y0, x1, y1, outline='yellow', width=10, tag='hatch')
-            ctx.create_oval(x0-3, y0-3, x1+3, y1+3, outline='#DDD', width=2, tag='cargo')
-        else: # Cargo
-            ctx.create_oval(x0, y0, x1, y1, outline='#ff4a00', fill='#ff4a00', width=5, tag='cargo')
-    elif current_btn == 6: draw_habs(hab12='blue')
-    elif current_btn == 7: draw_habs(hab23='blue')
-    elif current_btn == 8: draw_habs(cargo_ship='blue')
-    elif current_btn == 9: draw_habs(load_hatch='blue')
+        ctx.create_oval(x0, y0, x1, y1, outline='yellow', width=10, tag='hatch0')
+        ctx.create_oval(x0-3, y0-3, x1+3, y1+3, outline='#DDD', width=2, tag='hatch1')
+    elif current_btn == 4: draw_habs(hab12='blue')
+    elif current_btn == 5: draw_habs(hab23='blue')
     else: draw_habs()
 
 delay = 50
