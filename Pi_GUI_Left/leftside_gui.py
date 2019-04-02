@@ -35,6 +35,8 @@ ctx.pack()
 bg = PhotoImage(file="left_bg.gif")
 ctx.create_image(0, 0, image=bg, tag="bg", anchor=NW)
 
+robot = PhotoImage(file="robot.gif")
+
 # "It's circle time!" - James Narayanan
 circle_coords = [(369,396), (129,395), (129, 272), (129, 150)]
 radius = 50
@@ -50,17 +52,29 @@ ctx.create_rectangle(width - exit_button_width, height - exit_button_height, wid
 btn_height = height/2 - exit_button_height/2 - 5
 btn_width = 300
 
-def draw_habs(hab12='#111', hab23='#111', cargo_ship='#111', load_hatch='#111'):
+# Starting config button
+start_x = 275
+start_y = 10
+start_width = 200
+start_height = 300
+
+def draw_habs(hab12='#111', hab23='#111', start='#111'):
     # Rectangles
     ctx.delete('hab12')
     ctx.create_rectangle(width-btn_width, 0, width, btn_height, fill=hab12, outline='white',tag='hab12')
     ctx.delete('hab23')
     ctx.create_rectangle(width-btn_width, btn_height, width, btn_height*2, fill=hab23, outline='white',tag='hab23')
+    ctx.delete('start')
+    ctx.create_rectangle(start_x, start_y, start_x+start_width, start_y+start_height, fill=start, outline='white',tag='start')
     # Text boxes
     ctx.delete('hab12txt')
     ctx.create_text(width-btn_width/2, btn_height/2, text="HAB 1 → 2", fill="white", font="helvetica 40", tag='hab12txt')
     ctx.delete('hab23txt')
     ctx.create_text(width-btn_width/2, btn_height*3/2, text="HAB 2 → 3", fill="white", font="helvetica 40", tag='hab23txt')
+    ctx.delete('starttxt')
+    ctx.create_text(start_x+start_width/2, start_y+start_height-2, text="STARTING\nCONFIG", fill="white", font="helvetica 24", justify=CENTER, anchor=S, tag="starttxt")
+    ctx.delete("robot")
+    ctx.create_image(start_x+start_width/2, start_y + 5, image=robot, anchor=N, tag="robot")
 
 draw_habs()
 
@@ -87,6 +101,8 @@ def handle_click(event):
             picked_btn = 4
         elif event.y <= btn_height * 2: # Hab 2 to 3
             picked_btn = 5
+    elif event.x >= start_x and event.x <= start_x + start_width and event.y >= start_y and event.y <= start_y + start_height:
+        picked_btn = 6
     
     if current_btn == picked_btn:
         current_btn = -1
@@ -106,8 +122,9 @@ def handle_click(event):
         y1 = coord[1] + r
         ctx.create_oval(x0, y0, x1, y1, outline='yellow', width=10, tag='hatch0')
         ctx.create_oval(x0-3, y0-3, x1+3, y1+3, outline='#DDD', width=2, tag='hatch1')
-    elif current_btn == 4: draw_habs(hab12='blue')
-    elif current_btn == 5: draw_habs(hab23='blue')
+    elif current_btn == 4: draw_habs(hab12='red')
+    elif current_btn == 5: draw_habs(hab23='red')
+    elif current_btn == 6: draw_habs(start='red')
     else: draw_habs()
 
 delay = 50
